@@ -1,3 +1,9 @@
+# 32 single-stranded DNA binding proteins used for training
+# Each protein is showing 3 lines:
+# 1. UniProtID
+# 2. Sequence
+# 3. Annotation of single-stranded binding residues from BioLip (. represents non-binding residues; S represents single-stranded DNA binding residues; L represents ligand binding residues)
+
 >P15424
 MLTSILIKGRTPVLASRNLLAALSNCNHITWAVSRRLYNDGNRDQRNFGRNQRNNNSNRYRNSRFNSRPRTRSREDDDEVHFDKTTFSKLIHVPKEDNSKEVTLDSLLEEGVLDKEIHKAITRMEFPGLTPVQQKTIKPILSSEDHDVIARAKTGTGKTFAFLIPIFQHLINTKFDSQYMVKAVIVAPTRDLALQIEAEVKKIHDMNYGLKKYACVSLVGGTDFRAAMNKMNKLRPNIVIATPGRLIDVLEKYSNKFFRFVDYKVLDEADRLLEIGFRDDLETISGILNEKNSKSADNIKTLLFSATLDDKVQKLANNIMNKKECLFLDTVDKNEPEAHERIDQSVVISEKFANSIFAAVEHIKKQIKERDSNYKAIIFAPTVKFTSFLCSILKNEFKKDLPILEFHGKITQNKRTSLVKRFKKDESGILVCTDVGARGMDFPNVHEVLQIGVPSELANYIHRIGRTARSGKEGSSVLFICKDELPFVRELEDAKNIVIAKQEKYEPSEEIKSEVLEAVTEEPEDISDIVISLISSYRSCIKEYRFSERRILPEIASTYGVLLNDPQLKIPVSRRFLDKLGLSRSPIGKAMFEIRDYSSRDGNNKSYDYDDDSEISFRGNKNYNNRSQNRDYDDEPFRRSNNNRRSFSRSNDKNNYSSRNSNIY
 .............................................................................................................................L.LLL..L....................LLLLLL............................S.S...........L.................SS....................S.SS..S..................LL..S..S......................................................................................S...................SSSS......................SS......S.................SSS...L.L.............SS..S.........LL.................................................S.......L...S..S...S...S.............L...........................................................................................................

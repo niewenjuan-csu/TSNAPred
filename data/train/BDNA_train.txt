@@ -1,3 +1,9 @@
+# 140 B-DNA binding proteins used for training
+# Each protein is showing 3 lines:
+# 1. UniProtID
+# 2. Sequence
+# 3. Annotation of B-DNA binding residues from BioLip (. represents non-binding residues; B represents B-DNA binding residues; L represents ligand binding residues)
+
 >P62801
 MSGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGG
 ..........B.....B..B.B.B......B.B..BB........BBBB.............................BBB......................

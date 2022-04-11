@@ -1,3 +1,9 @@
+# 50 A-DNA binding proteins used for training
+# Each protein is showing 3 lines:
+# 1. UniProtID
+# 2. Sequence
+# 3. Annotation of A-DNA binding residues from BioLip (. represents non-binding residues; A represents A-DNA binding residues; L represents ligand binding residues)
+
 >P0AC51
 MEKTTTQELLAQAEKICAQRNVRLTPQRLEVLRLMSLQDGAISAYDLLDLLREAEPQAKPPTVYRALDFLLEQGFVHKVESTNSYVLCHLFDQPTHTSAMFICDRCGAVKEECAEGVEDIMHTLAAKMGFALRHNVIEAHGLCAACVEVEACRHPEQCQHDHSVQVKKKPR
 ......................A.A.AA................A...........A.AAA..AA...........LA....A.A..L.......L......L..L....LL..L...........................L..L.........................
