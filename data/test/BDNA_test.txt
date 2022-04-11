@@ -1,3 +1,9 @@
+# 35 B-DNA binding proteins used for test
+# Each protein is showing 3 lines:
+# 1. UniProtID
+# 2. Sequence
+# 3. Annotation of B-DNA binding residues from BioLip (. represents non-binding residues; B represents B-DNA binding residues; L represents ligand binding residues)
+
 >E6GPD7
 MGWRTVVVNKHSKLSYKNNHLVFKAIDHQELIHLSEIDVLLLETTDISLTTMLLKRLIDEKILVLFCDDKRLPIGKILPFYGRHDSSLQLTRQLAWTEERKGQVWTAIIAQKITNQSLHLAQRDYGQKAAALLAMRAELRLFDPANREGHAARSYFNTLFGNDFTREQENDINAGLNYGYTLLLSIFARELVQTGCFTQLGLKHANQFNDFNLASDLMEPFRPLVDQIIYENRKEAFPIMKRKLFALFMNTYMYKKKQMFLTNIATDYTKHVVKVLNQEEEGVPEFGI
 B.........B.B.BBBB..........................BB.B.B.B.................BB...........BB...........................B...............B......B.........BBBBBB.BB..B.....B..BBB......B..BB.BBB..B.......B..........BBBBBB.....B...B..B..............B...B...............BBBB..B......B...B..............

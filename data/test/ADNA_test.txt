@@ -1,3 +1,9 @@
+# 10 A-DNA binding proteins used for test
+# Each protein is showing 3 lines:
+# 1. UniProtID
+# 2. Sequence
+# 3. Annotation of A-DNA binding residues from BioLip (. represents non-binding residues; A represents A-DNA binding residues; L represents ligand binding residues)
+
 >P03880
 MRILKSHPLLKIVNSYIIDSPQPANLSYLWNFGSLLALCLGIQIVTGVTLAMHYTPSVSEAFNSVEHIMRDVNNGWLVRYLHSNTASAFFFLVYLHIGRGLYYGSYKTPRTLTWAIGTVILIVMMATAFLGYVLPYGQMSLWGATVITNLMSAIPWIGQDIVEFIWGGLYTDEPQCGDVLLKILLNAGKSPILGFAYDLFFIIVLLIGVKIAMTRGKSAGVRSLHTSEASQRLHAGDLTYAYLVGLFEGDGYFSITKKGKYLTYELGIELSIKDVQLIYKIKKILGIGIVSFRKINEIEMVALRIRDKNHLKSFILPIFEKYPMFSNKQYDYLRFRNALLSGIISLEDLPDYTRSDEPLNSIESIINTSYFSAWLVGFIEAEGCFSVYKLNKDDDYLIASFDIAQRDGDILISAIRKYLSFTTKVYLDKTNCSKLKVTSVRSVENIIKFLQNAPVKLLGNKKLQYLLWLKQLRKISRYSEKIKIPSNY
 ........................................................................................................................................................................................................................................................AAAA.A.AAAA.A.......AAA.................A...A.A..A.A...A.AAA...................................A.........A..........................AA.A.A.AAA.....A.A.A.A.AAA................AA.A..AA.A.A.A.AAA....................A..A............A...........
