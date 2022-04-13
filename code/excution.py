@@ -25,14 +25,14 @@ def create_network():
     return model
 
 def lightgmprediction_nn(testfeature, testlabel):
-    model0 = joblib.load('./model/dl/lgb_nonbind.pkl')
-    model1 = joblib.load('./model/dl/lgb_ADNA.pkl')
-    model2 = joblib.load('./model/dl/lgb_BDNA.pkl')
-    model3 = joblib.load('./model/dl/lgb_ssDNA.pkl')
-    model4 = joblib.load('./model/dl/lgb_mRNA.pkl')
-    model5 = joblib.load('./model/dl/lgb_tRNA.pkl')
-    model6 = joblib.load('./model/dl/lgb_rRNA.pkl')
-    # load train data
+    model0 = joblib.load('~/model/LightGBM/lgb_nonbind.pkl')
+    model1 = joblib.load('~/model/LightGBM/lgb_ADNA.pkl')
+    model2 = joblib.load('~/model/LightGBM/lgb_BDNA.pkl')
+    model3 = joblib.load('~/model/LightGBM/lgb_ssDNA.pkl')
+    model4 = joblib.load('~/model/LightGBM/lgb_mRNA.pkl')
+    model5 = joblib.load('~/model/LightGBM/lgb_tRNA.pkl')
+    model6 = joblib.load('~/model/LightGBM/lgb_rRNA.pkl')
+    # load train data (the file path need to change to where you save the output of feature_generation_lgb.py)
     trainfeature_pickle = open(
         './feature/train/trainfeature_lgb.pickle', 'rb')
     trainfeature = pickle.load(trainfeature_pickle)
@@ -84,29 +84,30 @@ def lightgmprediction_nn(testfeature, testlabel):
     return y_prob
 
 def capsnetprediction_nn(testfeature, testlabel):
-    testfeature = np.array(testfeature).reshape(-1, 19, 30, 1)
+    testfeature = np.array(testfeature).reshape(-1, 21, 30, 1)
 
-    model0 = CaspNet(input_shape=(19, 30, 1), n_class=2, num_routing=3)
-    model0.load_weights('./model/dl/capsnet_nonbind.h5')
-    model1 = CaspNet(input_shape=(19, 30, 1), n_class=2, num_routing=3)
-    model1.load_weights('./model/dl/capsnet_ADNA.h5')
-    model2 = CaspNet(input_shape=(19, 30, 1), n_class=2, num_routing=3)
-    model2.load_weights('./model/dl/capsnet_BDNA.h5')
-    model3 = CaspNet(input_shape=(19, 30, 1), n_class=2, num_routing=3)
-    model3.load_weights('./model/dl/capsnet_ssDNA.h5')
-    model4 = CaspNet(input_shape=(19, 30, 1), n_class=2, num_routing=3)
-    model4.load_weights('./model/dl/capsnet_mRNA.h5')
-    model5 = CaspNet(input_shape=(19, 30, 1), n_class=2, num_routing=3)
-    model5.load_weights('./model/dl/capsnet_tRNA.h5')
-    model6 = CaspNet(input_shape=(19, 30, 1), n_class=2, num_routing=3)
-    model6.load_weights('./model/dl/capsnet_rRNA.h5')
+    model0 = CaspNet(input_shape=(21, 30, 1), n_class=2, num_routing=3)
+    model0.load_weights('~/model/CapsNet/capsnet_nonbind.h5')
+    model1 = CaspNet(input_shape=(21, 30, 1), n_class=2, num_routing=3)
+    model1.load_weights('~/model/CapsNet/capsnet_ADNA.h5')
+    model2 = CaspNet(input_shape=(21 30, 1), n_class=2, num_routing=3)
+    model2.load_weights('~/model/CapsNet/capsnet_BDNA.h5')
+    model3 = CaspNet(input_shape=(21, 30, 1), n_class=2, num_routing=3)
+    model3.load_weights('~/model/CapsNetl/capsnet_ssDNA.h5')
+    model4 = CaspNet(input_shape=(21, 30, 1), n_class=2, num_routing=3)
+    model4.load_weights('~/model/CapsNet/capsnet_mRNA.h5')
+    model5 = CaspNet(input_shape=(21, 30, 1), n_class=2, num_routing=3)
+    model5.load_weights('~/model/CapsNet/capsnet_tRNA.h5')
+    model6 = CaspNet(input_shape=(21, 30, 1), n_class=2, num_routing=3)
+    model6.load_weights('~/model/CapsNet/capsnet_rRNA.h5')
 
+    # load train data (the file path need to change to where you save the output of feature_generation_capsnet.py)
     trainfeature_pickle = open(
         './feature/train/trainfeature_capsnet.pickle', 'rb')
     trainfeature = pickle.load(trainfeature_pickle)
     trainlabel_pickle = open('./feature/train/trainlabel_capsnet.pickle', 'rb')
     trainlabel = pickle.load(trainlabel_pickle)
-    trainfeature = np.array(trainfeature).reshape(-1, 19, 30, 1)
+    trainfeature = np.array(trainfeature).reshape(-1, 21, 30, 1)
     trainlabel = np.array(trainlabel)
     trainlabel_binary = np_utils.to_categorical(trainlabel, num_classes=7)
 
@@ -168,26 +169,20 @@ if __name__ == '__main__':
     testlabel_capsnet = np.array(testlabel)
 
 
-    # 三分类--label处理
+    # multi-class classification
     # 0:nonbind 1:DNA-binding 2:RNA-binding
     tri_testlabel_capsnet = []
     tri_testlabel_lgb = []
     for i in range(len(testlabel_capsnet)):
         if testlabel_capsnet[i] == 1 or testlabel_capsnet[i] == 2 or testlabel_capsnet[i] == 3:
             tri_testlabel_capsnet.append(1)
+            tri_testlabel_lgb.append(1)
         elif testlabel_capsnet[i] == 4 or testlabel_capsnet[i] == 5 or testlabel_capsnet[i] == 6:
             tri_testlabel_capsnet.append(2)
-        else:
-            tri_testlabel_capsnet.append(testlabel_capsnet[i])
-
-    for i in range(len(testlabel_lgb)):
-        if testlabel_lgb[i] == 1 or testlabel_lgb[i] == 2 or testlabel_lgb[i] == 3:
-            tri_testlabel_lgb.append(1)
-        elif testlabel_lgb[i] == 4 or testlabel_lgb[i] == 5 or testlabel_lgb[i] == 6:
             tri_testlabel_lgb.append(2)
         else:
-            tri_testlabel_lgb.append(testlabel_lgb[i])
-
+            tri_testlabel_capsnet.append(testlabel_capsnet[i])
+            tri_testlabel_lgb.append(testlabel_capsnet[i])
 
     lgbprediction_result = lightgmprediction_nn(testfeature_lgb, testlabel_lgb)
     print(lgbprediction_result)
@@ -228,98 +223,6 @@ if __name__ == '__main__':
     plt.title('AUC for TSNAPred')
     plt.legend(loc="lower right")
     plt.show()
-
-    """
-    # 阈值划分
-    threshold_prob = dict()
-    for i in range(len(target)):
-        threshold_prob[target[i]] = []
-        flag = 0
-        for j in range(len(fpr[target[i]])):
-            if fpr[target[i]][j] >= 0.05 and flag == 0:
-                threshold_prob[target[i]].append(thresholds[target[i]][j])
-                flag += 1
-            if fpr[target[i]][j] >= 0.1 and flag == 1:
-                threshold_prob[target[i]].append(thresholds[target[i]][j])
-                flag += 1
-            if fpr[target[i]][j] >= 0.15 and flag == 2:
-                threshold_prob[target[i]].append(thresholds[target[i]][j])
-                flag += 1
-            if fpr[target[i]][j] >= 0.2 and flag == 3:
-                threshold_prob[target[i]].append(thresholds[target[i]][j])
-    # print(threshold_prob)
-    # min_threshold = 100
-    # for i in range(1, len(target)):
-    #     threshold = threshold_prob[target[i]][0]
-    #     if threshold < min_threshold:
-    #         min_threshold = threshold
-    prediction_fpr5 = []
-    prediction_fpr10 = []
-    prediction_fpr15 = []
-    prediction_fpr20 = []
-    prediction_sen_equal_spe = []
-    for y in ensembleprediction:
-        eachpred_5 = []
-        eachpred_10 = []
-        eachpred_15 = []
-        eachpred_20 = []
-        eachpred_sen_equal_spe = []
-        for j in range(len(target)):
-            if y[j] >= threshold_prob[target[j]][0]:
-                eachpred_5.append(1)
-            else:
-                eachpred_5.append(0)
-            if y[j] >= threshold_prob[target[j]][1]:
-                eachpred_10.append(1)
-            else:
-                eachpred_10.append(0)
-            if y[j] >= threshold_prob[target[j]][2]:
-                eachpred_15.append(1)
-            else:
-                eachpred_15.append(0)
-            if y[j] >= threshold_prob[target[j]][3]:
-                eachpred_20.append(1)
-            else:
-                eachpred_20.append(0)
-
-        prediction_fpr5.append(eachpred_5)
-        prediction_fpr10.append(eachpred_10)
-        prediction_fpr15.append(eachpred_15)
-        prediction_fpr20.append(eachpred_20)
-    prediction_fpr5 = np.array(prediction_fpr5)
-    prediction_fpr10 = np.array(prediction_fpr10)
-    prediction_fpr15 = np.array(prediction_fpr15)
-    prediction_fpr20 = np.array(prediction_fpr20)
-
-    print("\n FPR at 5%:")
-    for i in range(len(target)):
-        recall[target[i]] = recall_score(y_test[:, i], prediction_fpr5[:, i])
-        mcc[target[i]] = matthews_corrcoef(y_test[:, i], prediction_fpr5[:, i])
-        print('the class %s  - recall:%s -mcc:%s' % (
-        str(target[i]), str(round(recall[target[i]], 4)), str(round(mcc[target[i]], 4))))
-
-    print("\n FPR at 10%:")
-    for i in range(len(target)):
-        recall[target[i]] = recall_score(y_test[:, i], prediction_fpr10[:, i])
-        mcc[target[i]] = matthews_corrcoef(y_test[:, i], prediction_fpr10[:, i])
-        print('the class %s  - recall:%s -mcc:%s' % (
-            str(target[i]), str(round(recall[target[i]], 4)), str(round(mcc[target[i]], 4))))
-
-    print("\n FPR at 15%:")
-    for i in range(len(target)):
-        recall[target[i]] = recall_score(y_test[:, i], prediction_fpr15[:, i])
-        mcc[target[i]] = matthews_corrcoef(y_test[:, i], prediction_fpr15[:, i])
-        print('the class %s  - recall:%s -mcc:%s' % (
-            str(target[i]), str(round(recall[target[i]], 4)), str(round(mcc[target[i]], 4))))
-
-    print("\n FPR at 20%:")
-    for i in range(len(target)):
-        recall[target[i]] = recall_score(y_test[:, i], prediction_fpr20[:, i])
-        mcc[target[i]] = matthews_corrcoef(y_test[:, i], prediction_fpr20[:, i])
-        print('the class %s  - recall:%s -mcc:%s' % (
-            str(target[i]), str(round(recall[target[i]], 4)), str(round(mcc[target[i]], 4))))
-    """
-
 
     """
     # seach for the optimal weight from [0,1]
@@ -386,8 +289,7 @@ if __name__ == '__main__':
         ACC_array.append(ACC)
     # """
 
-    # """
-    # 三分类
+    # distinguish DNA-, RNA-, and non-nucleic acid binding residues
     tri_predictionprob = []
     for i in range(len(ensembleprediction)):
         eachprediction = []
@@ -445,8 +347,6 @@ if __name__ == '__main__':
     plt.show()
     # """
 
-    # """
-    # 阈值划分
     threshold_prob = dict()
     for i in range(len(target)):
         threshold_prob[target[i]] = []
@@ -559,7 +459,7 @@ if __name__ == '__main__':
                                                                                     str(round(precision[target[i]],
                                                                                               4)),
                                                                                     str(round(mcc[target[i]], 4))))
-    # """
+
 
 
 

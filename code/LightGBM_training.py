@@ -12,7 +12,7 @@ import lightgbm as lgb
 from sklearn.model_selection import GridSearchCV
 import joblib
 
-# 处理label
+# Processing original labels to binarized labels
 def binary_label(label_list, class_id):
     output_label = []
     for i in range(len(label_list)):
@@ -23,17 +23,19 @@ def binary_label(label_list, class_id):
     return output_label
 
 if __name__ == '__main__':
-    
     """
-    对各个类别开始调参
+    Generate binary classifiers for each binding nucleic acid.
+    For each type of binding nucleic acid, generate protein sequence feature from the corresponding training subset by feature_ml.py,
+    and then change the file path to where you saved it.
     """
     traindata_pickle = open('./feature/train/trainfeature_lgb_eachclass.pickle', 'rb')
     traindata = pickle.load(traindata_pickle)
     trainlabel_pickle = open('./feature/train/trainlabel_lgb_eachclass.pickle', 'rb')
     trainlabel = pickle.load(trainlabel_pickle)
-    ADNA_traindata = traindata['6']
-    ADNA_trainlabel = trainlabel['6']
-    ADNA_binary_trainlabel = binary_label(ADNA_trainlabel, 6)
+    # 0: nonbind; 1: A-DNA bind; 2: B-DNA bind; 3: ssDNA bind; 4: mRNA bind; 5: tRNA bind; 6: rRNA bind.
+    ADNA_traindata = traindata['1']
+    ADNA_trainlabel = trainlabel['1']
+    ADNA_binary_trainlabel = binary_label(ADNA_trainlabel, 1)
     ADNA_traindata = np.array(ADNA_traindata)
     ADNA_binary_trainlabel = np.array(ADNA_binary_trainlabel)
 
@@ -58,7 +60,7 @@ if __name__ == '__main__':
     # print('best n_estimators:', len(cv_results['auc-mean']))
     # print('best cv score:', pd.Series(cv_results['auc-mean']).max())
 
-    # grid search
+    # grid search to find optimal hyper-parameter
     parameters = {
         'max_depth': range(3, 8, 1),
         'num_leaves': range(5, 100, 5),
@@ -76,14 +78,14 @@ if __name__ == '__main__':
                objective='binary', reg_alpha=0, reg_lambda=0.5)
     gsearch = GridSearchCV(gbm, param_grid=parameters, scoring='roc_auc', cv=5)
     gsearch.fit(x_train, y_train)
-    print('参数的最佳取值:{0}'.format(gsearch.best_params_))
-    print('最佳模型得分:{0}'.format(gsearch.best_score_))
+    print('optimal hyper-parameter:{0}'.format(gsearch.best_params_))
+    print('best model:{0}'.format(gsearch.best_score_))
     print(gsearch.cv_results_['mean_test_score'])
     print(gsearch.cv_results_['params'])
     
     gbm.fit(x_train, y_train)
 
-    joblib.dump(gbm, './model/ml/lgb_rRNA.pkl')
+    joblib.dump(gbm, './model/LightGBM/lgb_ADNA.pkl')
 
 
 

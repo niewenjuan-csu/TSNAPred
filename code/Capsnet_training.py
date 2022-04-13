@@ -67,10 +67,6 @@ class roc_callback(callbacks.Callback):
         self.val_accuracy['epoch'].append(logs.get('val_acc'))
         self.auc['epoch'].append(roc)
         self.auc_val['epoch'].append(roc_val)
-        # self.f1_value['epoch'].append(_val_f1)
-        # # target_name = ['non-binding', 'ADNA binding', 'BDNA binding', 'ssDNA binding', 'mRNA binding', 'tRNA binding', 'rRNA binding']
-        # print(metrics.classification_report(val_targ, val_predict))
-
         return
 
     def on_batch_begin(self, batch, logs={}):
@@ -132,7 +128,6 @@ def CaspNet(input_shape, n_class, num_routing):
 
     return model
 
-
 def binary_label(labellist, class_id):
     output_label = []
     for i in range(len(labellist)):
@@ -142,13 +137,12 @@ def binary_label(labellist, class_id):
             output_label.append(0)
     return output_label
 
-
-
 if __name__ == '__main__':
     batch_size = 32
     num_classes = 2
     lr = 0.01
 
+    # the file path need to change to where you save the output of feature_generation_capsnet.py
     traindata_pickle = open('./feature/train/trainfeature_capsnet_eachclass.pickle',
                             'rb')
     traindata = pickle.load(traindata_pickle)
@@ -157,32 +151,16 @@ if __name__ == '__main__':
                              'rb')
     trainlabel = pickle.load(trainlabel_pickle)
 
-    ADNA_traindata = traindata['1']
-    ADNA_trainlabel = binary_label(trainlabel['1'], 1)
-    x_train, x_test, y_train, y_test = train_test_split(ADNA_traindata, ADNA_trainlabel, test_size=0.2, shuffle=True,
-                                                        random_state=42)
-    x_train = np.array(x_train).reshape(-1, 19, 30, 1)
-    x_test = np.array(x_test).reshape(-1, 19, 30, 1)
-    y_train = np.array(y_train)
-    y_test = np.array(y_test)
-    print(x_train.shape)
-    print(y_train.shape)
-    print(x_test.shape)
-    print(y_test.shape)
-    y_train = np_utils.to_categorical(y_train, num_classes)
-    y_test = np_utils.to_categorical(y_test, num_classes)
-
-
     """"
-    # grid search
-    X = np.array(ADNA_traindata).reshape(-1, 19, 30, 1)
+    # grid search for optimal hyper-parameter
+    X = np.array(ADNA_traindata).reshape(-1, 21, 30, 1)
     Y = np.array(ADNA_trainlabel)
     Y = np_utils.to_categorical(Y, 2)
     model = KerasClassifier(build_fn=create_model, batch_size=16, epochs=100,  verbose=1)
     batch_size = [16, 32, 64, 128, 256]
     epochs = [50, 100, 150, 200]
     param_grid = dict(batch_size=batch_size, nb_epoch=epochs)
-    lr = [0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]
+    lr = [0.01, 0.005, 0.001, 0.0005, 0.0001]
     param_grid = dict(lr=lr)
     grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=1)
     grid_result = grid.fit(X, Y)
@@ -192,13 +170,27 @@ if __name__ == '__main__':
     params = grid_result.cv_results_['params']
     for means, stds, params in zip(means, stds, params):
         print("%f (%f) with %r" %(means, stds, params))
-    """
+        """
 
-    model = CaspNet(input_shape=(19, 30, 1), n_class=2, num_routing=3)
+    ADNA_traindata = traindata['1']
+    ADNA_trainlabel = binary_label(trainlabel['1'], 1)
+    x_train, x_test, y_train, y_test = train_test_split(ADNA_traindata, ADNA_trainlabel, test_size=0.2, shuffle=True,
+                                                        random_state=42)
+    x_train = np.array(x_train).reshape(-1, 21, 30, 1)
+    x_test = np.array(x_test).reshape(-1, 21, 30, 1)
+    y_train = np.array(y_train)
+    y_test = np.array(y_test)
+    print(x_train.shape)
+    print(y_train.shape)
+    print(x_test.shape)
+    print(y_test.shape)
+    y_train = np_utils.to_categorical(y_train, num_classes)
+    y_test = np_utils.to_categorical(y_test, num_classes)
+    model = CaspNet(input_shape=(21, 30, 1), n_class=2, num_routing=3)
     model.summary()
     model.compile(loss=margin_loss, optimizer=optimizers.Adam(lr=lr), loss_weights=[1.], metrics=['accuracy'])
     checkpoint = callbacks.ModelCheckpoint(
-        './model_21/ADNA/weights-{epoch:03d}-{val_acc:.4f}.h5',
+        './model/CapsNet/ADNA/weights-{epoch:03d}-{val_acc:.4f}.h5',
         monitor='val_acc', save_best_only=True, save_weights_only=True, verbose=1)
     lr_decay = callbacks.LearningRateScheduler(schedule=lambda epoch: lr * (0.95 ** epoch))
     roccallback = roc_callback(training_data=(x_train, y_train), validation_data=(x_test, y_test))

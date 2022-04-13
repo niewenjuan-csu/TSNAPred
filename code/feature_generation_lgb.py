@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 import pickle
 import random
 
-# 标准化
+# Normalize numeric values to [0,1]
 def normalize(value):
     a = 1 + math.exp(value)
     b = 1 / a
@@ -42,13 +42,8 @@ def loadRAAPdic(RAAPpath):
     return newRAAPdic
 
 def psipredfeature(psipredoutpath, uniport_id):
-    """
-    :param psipredoutpath: 二级结构存放路径
-    :param uniport_id:
-    :return: 二级结构特征
-    """
     psipredDic = {}
-    filelines = linecache.getlines(psipredoutpath + '\\' + uniport_id + '\\' + uniport_id + '.ss2')
+    filelines = linecache.getlines(psipredoutpath + '/' + uniport_id + '/' + uniport_id + '.ss2')
     length = len(filelines)
     for i in range(2, length):
         residuenum = int(filelines[i].split()[0]) - 1
@@ -59,15 +54,9 @@ def psipredfeature(psipredoutpath, uniport_id):
     # print(psipredDic)
     return psipredDic
 
-
 def RSAfeature(RSASpath, uniport_id):
-    """
-    :param RSASpath: 预测溶剂可及性文件存放路径
-    :param uniport_id:
-    :return: 溶剂可及性
-    """
     rsaDic = {}
-    filelines = linecache.getlines(RSASpath + '\\' + 'asaq.' + uniport_id + '.fasta' + '\\' + 'asaq.pred')
+    filelines = linecache.getlines(RSASpath + '/' + 'asaq.' + uniport_id + '.fasta' + '/' + 'asaq.pred')
     length = len(filelines)
     for i in range(length-1):
         residuenum = int(filelines[i].split()[0]) - 1
@@ -80,15 +69,9 @@ def RSAfeature(RSASpath, uniport_id):
     # print(rsaDic)
     return rsaDic
 
-
 def Disorderfeature(Disorderpath, uniport_id):
-    """
-    :param Disorderpath: 文件存放路径
-    :param uniport_id:
-    :return: 无序性
-    """
     DisorderDic = {}
-    filelines = linecache.getlines(Disorderpath + '\\' + uniport_id + '.txt')
+    filelines = linecache.getlines(Disorderpath + '/' + uniport_id + '.txt')
     length = len(filelines)
     for i in range(7, length):
         residuenum = int(filelines[i].split()[0]) - 1
@@ -97,12 +80,9 @@ def Disorderfeature(Disorderpath, uniport_id):
     # print(DisorderDic)
     return DisorderDic
 
-# 只选取了疏水性极性，电极，的两种指标
 def AAindex(uniport_id, fasta_line):
     """
-    :param fasta_line: 蛋白质fasta序列，string
-    :param uniport_id:
-    :return:
+    each residues: [hydrophobicity_1, hydrophobicity_2, polarity_1, polarity_2, positive charge, negative charge]
     """
     AAindexdic = {}
     length = len(fasta_line)
@@ -174,20 +154,14 @@ def AAindex(uniport_id, fasta_line):
 
 
 def ECOfeature(uniport_id, ECOpath):
-    """
-    :param uniport_id:
-    :param ECOpath: 文件存放路径
-    :return: 进化保护分数
-    """
     ECODic = {}
-    ecofilelines = linecache.getlines(ECOpath + '\\' + uniport_id + '.txt')
+    ecofilelines = linecache.getlines(ECOpath + '/' + uniport_id + '.txt')
     length = len(ecofilelines)
     for i in range(length):
         residuePosition = int(ecofilelines[i].split()[0]) - 1
         ECODic[residuePosition] = []
         ECODic[residuePosition].append(float(ecofilelines[i].split()[2]))
     return ECODic
-
 
 def RAAPfeature(uniport_id, fastaline, RAAPdic):
     RAAPfeaturedic = {}
@@ -197,11 +171,9 @@ def RAAPfeature(uniport_id, fastaline, RAAPdic):
         RAAPfeaturedic[i] = RAAPdic[residuename]
     return RAAPfeaturedic
 
-
-# 滑动窗口，前后补0
 def appendzero(windowsize, featureDic):
     """
-    :param windowsize: 滑动窗口大小
+    :param windowsize:
     :param featureDic: 单个蛋白质的特征字典
     :return:
     """
@@ -211,8 +183,6 @@ def appendzero(windowsize, featureDic):
     for i in range(1, appendnum):
         featureDic[0 - i] = []
         featureDic[seqlength - 1 + i] = []
-        # 前后补0；range范围为特征长度
-        # machine-learning:20 deep-learning:30
         for a in range(20):
             featureDic[0 - i].append(0)
         for b in range(20):
@@ -234,7 +204,6 @@ def combine(sequencelength, featuredic, windowsize):
         for a in range(i - neighnum, i + neighnum + 1):
             # combineDic[i].append(pssmdic[a])
             for each in featuredic[a]:
-                # 每个氨基酸得到窗口大小的特征矩阵
                 combineDic[i].append(each)
     featurelist = []
     for i in range(0, sequencelength):
@@ -267,7 +236,6 @@ def featurecombine(uniport_id,psipredoutpath, RSApath, Disorderpath, ECOpath, RA
             featuredic[i].append(each)
         for each in raapdic[i]:
             featuredic[i].append(each)
-    # 蛋白质滑动窗口，前后补0
     print(featuredic)
     appendedfeaturedic = appendzero(windowsize, featuredic)
     combinefeaturelist = combine(length, appendedfeaturedic, windowsize)
@@ -311,7 +279,6 @@ def labelize(labelline, uniport_id, bindtype):
             labellist.append(0)
     return labellist
 
-# 字典转列表
 def dictolist(dic):
     newlist = []
     for key in dic:
@@ -361,12 +328,11 @@ def savefile(filetosave, data):
 def get_subdict(keylist, dic):
     return dict([(key, dic[key]) for key in keylist])
 
-# 按照1:1划分数据
 def splitdata(class_id, class_dict):
     """
-    :param class_id: 键值，string类型
-    :param class_dict:  各标签类别对应的下标字典
-    :return:  划分后的下标集合
+    :param class_id: key value[0,1,2,3,4,5,6]，string
+    :param class_dict:  the index for each type of nucleic acid, dict
+    :return:  the set of index after split original dataset
     """
     amount = len(class_dict[class_id])
     limit_count = int(round(amount / 6.0))
@@ -390,9 +356,9 @@ def splitdata(class_id, class_dict):
 
 def get_classindex(label_list, class_id):
     """
-    :param label_list: list,标签列表
-    :param class_id: int, 标签类型
-    :return: 每个类别标签的下标集合
+    :param label_list: list
+    :param class_id: int, [0,1,2,3,4,5,6]
+    :return: A collection of index for each type of binding nucleic acid
     """
     class_index = []
     for i in range(len(label_list)):
@@ -401,7 +367,6 @@ def get_classindex(label_list, class_id):
     return class_index
 
 
-# 二值化label
 def binary_label(label_list, class_id):
     output_label = []
     for i in range(len(label_list)):
@@ -413,23 +378,26 @@ def binary_label(label_list, class_id):
 
 
 if __name__ == '__main__':
-
-    RAAPpath = 'D:\\dataset\\protein_data\\protein-nucbind\\data\\RAAP.txt'
+    # RAAP file can be downloaded from our project
+    RAAPpath = '~/feature/RAAP.txt'
     RAAPdic = loadRAAPdic(RAAPpath)
-    
-    traindata_path = 'D:\\dataset\\protein_data\\protein-nucbind\\data\\trainset'
-    train_psipredpath = traindata_path + '\\PSI'
-    train_RSApath = traindata_path + '\\RSA'
-    train_Disorderpath = traindata_path + '\\Disorder'
-    train_ECOpath = traindata_path + '\\ECO'
 
-    train_ADNA = traindata_path + '\\ADNA_train.txt'
-    train_BDNA = traindata_path + '\\BDNA_train.txt'
-    train_ssDNA = traindata_path + '\\ssDNA_train.txt'
-    train_mRNA = traindata_path + '\\mRNA_train.txt'
-    train_tRNA = traindata_path + '\\tRNA_train.txt'
-    train_rRNA = traindata_path + '\\rRNA_train.txt'
-    train_nonbind = traindata_path + '\\nonbind_train.txt'
+    # the path you saved original .ss2 file generated from PSIPRED
+    psipredpath = '~/feature/PSI'
+    # the path you saved original rasaq.pred file generated from ASAquick
+    RSApath = '~/feature/RSA'
+    # the path you saved original output file generated from IUPred2A
+    Disorderpath = '~/feature/Disorder'
+    # the path you saved original output file generated from HHblits
+    ECOpath = '~/feature/ECO'
+
+    train_ADNA = '~/data/train/ADNA_train.txt'
+    train_BDNA = '~/data/train/BDNA_train.txt'
+    train_ssDNA = '~/data/train/ssDNA_train.txt'
+    train_mRNA = '~/data/train/mRNA_train.txt'
+    train_tRNA = '~/data/train/tRNA_train.txt'
+    train_rRNA = '~/data/train/rRNA_train.txt'
+    train_nonbind = '~/data/train/nonbind_train.txt'
 
     print('start...')
     train_ADNA_protein, train_ADNA_fasta, train_ADNA_label = readtxt(train_ADNA, 'DNA')
@@ -439,7 +407,7 @@ if __name__ == '__main__':
     train_tRNA_protein, train_tRNA_fasta, train_tRNA_label = readtxt(train_tRNA, 'tRNA')
     train_rRNA_protein, train_rRNA_fasta, train_rRNA_label = readtxt(train_rRNA, 'rRNA')
     train_nonbind_protein, train_nonbind_fasta, train_nonbind_label = readtxt(train_nonbind, 'nonbind')
-    #所有训练蛋白质列表
+
     traindata_protein = train_ADNA_protein + train_BDNA_protein + train_ssDNA_protein + train_mRNA_protein + train_tRNA_protein + \
                         train_rRNA_protein + train_nonbind_protein
 
@@ -465,8 +433,8 @@ if __name__ == '__main__':
     for key in traindata_label:
         traindata_labellist.extend(traindata_label[key])
 
-    trainfeature = loadfeature(traindata_protein, traindata_fasta, train_psipredpath, train_RSApath,
-                               train_Disorderpath, train_ECOpath, RAAPdic, windowsize=21)
+    trainfeature = loadfeature(traindata_protein, traindata_fasta, psipredpath, RSApath,
+                               Disorderpath, ECOpath, RAAPdic, windowsize=21)
 
 
     count_list = {}
@@ -474,10 +442,10 @@ if __name__ == '__main__':
     for i in range(len(class_id)):
         count_list[class_id[i]] = get_classindex(traindata_labellist, eval(class_id[i]))
 
-    print("数据分布如下：")
+    print("Data Distribution：")
     print(count_list)
     
-    # 按类别存放相应训练子集特征
+    # generate the balance training subset for each type of binding nucleic acid
     traindata = {}
     trainlabel = {}
     
@@ -501,28 +469,21 @@ if __name__ == '__main__':
             trainlabel[class_id[i]] = [traindata_labellist[index] for index in output_index]
             traindata[class_id[i]] = [trainfeature[index] for index in output_index]
 
-    # 路径需更改为自己的本地路径
+    # the file path need to change where you want to save.
     savefile('./feature/train/trainfeature_lgb.pickle', trainfeature)
     savefile('./feature/train/trainlabel_lgb.pickle', traindata_labellist)
     savefile('./feature/train/trainfeature_lgb_eachclass.pickle', traindata)
     savefile('./feature/train/trainlabel_lgb_eachclass.pickle', trainlabel)
 
     
-    # 测试数据：
-
-    testdata_path = 'D:\\dataset\\protein_data\\protein-nucbind\\data\\testset'
-    test_psipredpath = testdata_path + '\\PSI'
-    test_RSApath = testdata_path + '\\RSA'
-    test_Disorderpath = testdata_path + '\\Disorder'
-    test_ECOpath = testdata_path + '\\ECO'
-    
-    test_ADNA = testdata_path + '\\ADNA_test.txt'
-    test_BDNA = testdata_path + '\\BDNA_test.txt'
-    test_ssDNA = testdata_path + '\\ssDNA_test.txt'
-    test_mRNA = testdata_path + '\\mRNA_test.txt'
-    test_tRNA = testdata_path + '\\tRNA_test.txt'
-    test_rRNA = testdata_path + '\\rRNA_test.txt'
-    test_nonbind = testdata_path + '\\nonbind_test.txt'
+    # generate feature for test set or validation set
+    test_ADNA = '~/data/test/ADNA_test.txt'
+    test_BDNA = '~/data/test/BDNA_test.txt'
+    test_ssDNA = '~/data/test/ssDNA_test.txt'
+    test_mRNA = '~/data/test/mRNA_test.txt'
+    test_tRNA = '~/data/test/tRNA_test.txt'
+    test_rRNA = '~/data/test/rRNA_test.txt'
+    test_nonbind = '~/data/test/nonbind_test.txt'
 
     print('test data preparing...')
     test_ADNA_protein, test_ADNA_fasta, test_ADNA_label = readtxt(test_ADNA, 'DNA')
@@ -560,12 +521,13 @@ if __name__ == '__main__':
     for key in testdata_label:
         testdata_labellist.extend(testdata_label[key])
 
-    testfeature = loadfeature(testdata_protein, testdata_fasta, test_psipredpath, test_RSApath,
-                               test_Disorderpath, test_ECOpath, RAAPdic, windowsize=21)
+    testfeature = loadfeature(testdata_protein, testdata_fasta, psipredpath, RSApath,
+                               Disorderpath, ECOpath, RAAPdic, windowsize=21)
 
     print(testfeature)
     print(testdata_labellist)
 
+    # the file path need to change where you want to save.
     savefile('./feature/test/testfeature_lgb.pickle', testfeature)
     savefile('./feature/test/testlabel_lgb.pickle', testdata_labellist)
   

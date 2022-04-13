@@ -9,13 +9,12 @@ import pickle
 import random
 import joblib
 
-# 标准化
+# Normalize numeric values to [0,1]
 def normalize(value):
     a = 1 + math.exp(value)
     b = 1 / a
     return b
 
-# 字典转列表
 def dictolist(dic):
     newlist = []
     for key in dic:
@@ -23,12 +22,7 @@ def dictolist(dic):
     return newlist
 
 def PSSMfeature(PSSMpath, uniport_id):
-    """
-    :param PSSMpath: PSSM存放路径
-    :param uniport_id:  蛋白质
-    :return: 位置特异性矩阵
-    """
-    pssmfilelines = linecache.getlines(PSSMpath + '\\' + uniport_id + '.pssm')
+    pssmfilelines = linecache.getlines(PSSMpath + '/' + uniport_id + '.pssm')
     pssmDic = {}
     for line in pssmfilelines:
         content = line.split()
@@ -40,13 +34,8 @@ def PSSMfeature(PSSMpath, uniport_id):
     return pssmDic
 
 def psipredfeature(psipredoutpath, uniport_id):
-    """
-    :param psipredoutpath: 二级结构存放路径
-    :param uniport_id:
-    :return: 二级结构特征
-    """
     psipredDic = {}
-    filelines = linecache.getlines(psipredoutpath + '\\' + uniport_id + '\\' + uniport_id + '.ss2')
+    filelines = linecache.getlines(psipredoutpath + '/' + uniport_id + '/' + uniport_id + '.ss2')
     length = len(filelines)
     for i in range(2, length):
         residuenum = int(filelines[i].split()[0]) - 1
@@ -59,8 +48,8 @@ def psipredfeature(psipredoutpath, uniport_id):
 
 def onehotfeature(fastaline, uniport_id):
     """
-    :param fastaline: 蛋白质fasta序列，string
-    :param uniport_id: 蛋白质id
+    :param fastaline: sequence, string
+    :param uniport_id: protein_name
     :return:
     """
     onehotdic = {}
@@ -87,15 +76,7 @@ def onehotfeature(fastaline, uniport_id):
     # print(chemicaldic)
     return onehotdic
 
-
-# 滑动窗口，前后补0
 def appendzero(windowsize, featureDic):
-    """
-    :param windowsize: 滑动窗口大小
-    :param featureDic: 单个蛋白质的特征字典
-    :return:
-    """
-    # print(featureDic)
     seqlength = len(featureDic.keys())
     appendnum = int((windowsize + 1) / 2)
     for i in range(1, appendnum):
@@ -111,12 +92,6 @@ def appendzero(windowsize, featureDic):
 
 
 def combine(sequencelength, featuredic, windowsize):
-    """
-    :param sequencelength: 蛋白质序列长度
-    :param featuredic: 该蛋白质的特征字典
-    :param windowsize: 滑动窗口大小
-    :return:  滑动窗口大小下的特征矩阵
-    """
     neighnum = int((windowsize - 1) / 2)
     combineDic = {}
     for i in range(0, sequencelength):
@@ -147,8 +122,6 @@ def featurecombine_for_deeplearning(uniport_id, PSSMpath, psipredoutpath, fastal
             featuredic[i].append(each)
         for each in onehotdic[i]:
             featuredic[i].append(each)
-    # 蛋白质滑动窗口，前后补0
-    # print(featuredic)
     appendedfeaturedic = appendzero(windowsize, featuredic)
     combinefeaturelist = combine(length, appendedfeaturedic, windowsize)
     return combinefeaturelist
@@ -203,7 +176,6 @@ def seperatefeature(combinefeaturelist, windowsize=17):
     return feature_combination
 
 
-# labelline应为labelline.strip(),去除空格
 def labelize(labelline, uniport_id, bindtype):
     labellist = []
     length = len(labelline)
@@ -292,12 +264,11 @@ def savefile(filetosave, data):
 def get_subdict(keylist, dic):
     return dict([(key, dic[key]) for key in keylist])
 
-# 按照1:1划分数据
 def splitdata(class_id, class_dict):
     """
-    :param class_id: 键值，string类型
-    :param class_dict:  各标签类别对应的下标字典
-    :return:  划分后的下标集合
+    :param class_id: key value[0,1,2,3,4,5,6]，string
+    :param class_dict:  the index for each type of nucleic acid, dict
+    :return:  the set of index after split original dataset
     """
     amount = len(class_dict[class_id])
     limit_count = int(round(amount / 6.0))
@@ -316,12 +287,11 @@ def splitdata(class_id, class_dict):
     # print(output_index)
     return output_index
 
-
 def get_classindex(label_list, class_id):
     """
-    :param label_list: list,标签列表
-    :param class_id: int, 标签类型
-    :return: 每个类别标签的下标集合
+     :param label_list: list
+    :param class_id: int, [0,1,2,3,4,5,6]
+    :return: A collection of index for each type of binding nucleic acid
     """
     class_index = []
     for i in range(len(label_list)):
@@ -330,7 +300,6 @@ def get_classindex(label_list, class_id):
     return class_index
 
 
-# 处理label
 def binary_label(label_list, class_id):
     output_label = []
     for i in range(len(label_list)):
@@ -344,18 +313,20 @@ def binary_label(label_list, class_id):
 
 if __name__ == '__main__':
 
-    traindata_path = 'D:\\dataset\\protein_data\\protein-nucbind\\data\\trainset'
-    train_PSSMpath = traindata_path + '\\train_pssm'
-    train_psipredpath = traindata_path + '\\PSI'
-    train_ECOpath = traindata_path + '\\ECO'
+    # the path you saved original .ss2 file generated from PSIPRED
+    psipredpath = '~/feature/PSI'
+    # the path you saved pssm.file file generated from PSI-BLAST
+    PSSMpath= '~/feature/PSSM'
+    # the path you saved original output file generated from HHblits
+    ECOpath = '~/feature/ECO'
 
-    train_ADNA = traindata_path + '\\ADNA_train.txt'
-    train_BDNA = traindata_path + '\\BDNA_train.txt'
-    train_ssDNA = traindata_path + '\\ssDNA_train.txt'
-    train_mRNA = traindata_path + '\\mRNA_train.txt'
-    train_tRNA = traindata_path + '\\tRNA_train.txt'
-    train_rRNA = traindata_path + '\\rRNA_train.txt'
-    train_nonbind = traindata_path + '\\nonbind_train.txt'
+    train_ADNA = '~/data/train/ADNA_train.txt'
+    train_BDNA = '~/data/train/BDNA_train.txt'
+    train_ssDNA = '~/data/train/ssDNA_train.txt'
+    train_mRNA = '~/data/train/mRNA_train.txt'
+    train_tRNA = '~/data/train/tRNA_train.txt'
+    train_rRNA = '~/data/train/rRNA_train.txt'
+    train_nonbind = '~/data/train/nonbind_train.txt'
 
     print('start...')
     train_ADNA_protein, train_ADNA_fasta, train_ADNA_label = readtxt(train_ADNA, 'DNA')
@@ -392,9 +363,8 @@ if __name__ == '__main__':
         traindata_labellist.extend(traindata_label[key])
 
     trainfeature, trainpssm, trainpsi, trainonehot, pssm_psi, pssm_onehot, psi_onehot = \
-        loadfeature_for_deeplearning(traindata_protein, traindata_fasta, train_PSSMpath, train_psipredpath, windowsize=19)
-    
-    
+        loadfeature_for_deeplearning(traindata_protein, traindata_fasta, PSSMpath, psipredpath, windowsize=21)
+
     savefile('./feature/train/trainlabel_capsnet.pickle', traindata_labellist)
     savefile('./feature/train/pssm.pickle', trainpssm)
     savefile('./feature/train/pssm_psi.pickle', pssm_psi)
@@ -402,17 +372,17 @@ if __name__ == '__main__':
     savefile('./feature/train/trainfeature_capsnet.pickle', trainfeature)
 
 
-    print("\nthe whole feature of training data has been finished!\n")
+    print("\nthe feature of training data has been finished!\n")
     
     count_list = {}
     class_id = ['0', '1', '2', '3', '4', '5', '6']
     for i in range(len(class_id)):
         count_list[class_id[i]] = get_classindex(traindata_labellist, eval(class_id[i]))
     
-    print("数据分布如下：")
+    print("Data Distribution：")
     print(count_list)
     
-    # 保存每个类别的特征及标签
+    # Features and labels for each type of binding nucleic acid
     pssm_eachclass = dict()
     pssmpsi_eachclass = dict()
     pssmonehot_eachclass = dict()
@@ -450,19 +420,14 @@ if __name__ == '__main__':
     savefile('./feature/train/pssmonehot_eachclass.pickle', pssmonehot_eachclass)
     savefile('./feature/train/trainfeature_capsnet_eachclass.pickle', traindata)
 
-    # 测试数据：
-    testdata_path = 'D:\\dataset\\protein_data\\protein-nucbind\\data\\testset'
-    test_PSSMpath = testdata_path + '\\test_pssm'
-    test_psipredpath = testdata_path + '\\PSI'
-    test_ECOpath = testdata_path + '\\ECO'
-
-    test_ADNA = testdata_path + '\\ADNA_test.txt'
-    test_BDNA = testdata_path + '\\BDNA_test.txt'
-    test_ssDNA = testdata_path + '\\ssDNA_test.txt'
-    test_mRNA = testdata_path + '\\mRNA_test.txt'
-    test_tRNA = testdata_path + '\\tRNA_test.txt'
-    test_rRNA = testdata_path + '\\rRNA_test.txt'
-    test_nonbind = testdata_path + '\\nonbind_test.txt'
+    # generate feature for test set or validation set
+    test_ADNA = '~/data/test/ADNA_test.txt'
+    test_BDNA = '~/data/test/BDNA_test.txt'
+    test_ssDNA = '~/data/test/ssDNA_test.txt'
+    test_mRNA = '~/data/test/mRNA_test.txt'
+    test_tRNA = '~/data/test/tRNA_test.txt'
+    test_rRNA = '~/data/test/rRNA_test.txt'
+    test_nonbind = '~/data/test/nonbind_test.txt'
 
     print('test data preparing...')
     test_ADNA_protein, test_ADNA_fasta, test_ADNA_label = readtxt(test_ADNA, 'DNA')
@@ -501,7 +466,7 @@ if __name__ == '__main__':
         testdata_labellist.extend(testdata_label[key])
     testdata_labelarray = np.array(testdata_labellist)
     testfeature, testpssm, testpsi, testonehot, test_pssmpsi, test_pssmonehot, test_psionehot = \
-        loadfeature_for_deeplearning(testdata_protein, testdata_fasta, test_PSSMpath, test_psipredpath, windowsize=19)
+        loadfeature_for_deeplearning(testdata_protein, testdata_fasta, PSSMpath, psipredpath, windowsize=21)
 
     print(testfeature)
     print(np.array(testfeature).shape)
