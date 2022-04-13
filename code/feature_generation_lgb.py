@@ -172,11 +172,6 @@ def RAAPfeature(uniport_id, fastaline, RAAPdic):
     return RAAPfeaturedic
 
 def appendzero(windowsize, featureDic):
-    """
-    :param windowsize:
-    :param featureDic: 单个蛋白质的特征字典
-    :return:
-    """
     # print(featureDic)
     seqlength = len(featureDic.keys())
     appendnum = int((windowsize + 1) / 2)
@@ -191,12 +186,6 @@ def appendzero(windowsize, featureDic):
 
 
 def combine(sequencelength, featuredic, windowsize):
-    """
-    :param sequencelength: 蛋白质序列长度
-    :param featuredic: 该蛋白质的特征字典
-    :param windowsize: 滑动窗口大小
-    :return:  滑动窗口大小下的特征矩阵
-    """
     neighnum = int((windowsize - 1) / 2)
     combineDic = {}
     for i in range(0, sequencelength):
@@ -241,8 +230,6 @@ def featurecombine(uniport_id,psipredoutpath, RSApath, Disorderpath, ECOpath, RA
     combinefeaturelist = combine(length, appendedfeaturedic, windowsize)
     return combinefeaturelist
 
-
-# labelline应为labelline.strip(),去除空格
 def labelize(labelline, uniport_id, bindtype):
     labellist = []
     length = len(labelline)
