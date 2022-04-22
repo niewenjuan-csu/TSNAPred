@@ -63,8 +63,8 @@ def RSAfeature(RSASpath, uniport_id):
         rsaDic[residuenum] = []
         rsaDic[residuenum].append(normalize(float(filelines[i].split()[2])))
         rsaDic[residuenum].append(normalize(float(filelines[i].split()[3])))
-        # rsaDic[residuenum].append(normalize(float(filelines[i].split()[2])/float(filelines[i].split()[3])))
-        flag = 1 if (float(filelines[i].split()[2])/float(filelines[i].split()[2])) >= 0.25 else 0
+        # rsaDic[residuenum].append(normalize(float(filelines[i].split()[3])/float(filelines[i].split()[2])))
+        flag = 1 if (float(filelines[i].split()[3])/float(filelines[i].split()[2])) >= 0.25 else 0
         rsaDic[residuenum].append(flag)
     # print(rsaDic)
     return rsaDic
