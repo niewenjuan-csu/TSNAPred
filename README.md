@@ -4,6 +4,8 @@ TSNAPred is a predictor first proposed to identify type-specific nucleic acid(A-
 
 # Requirements
 
+python == 3.6.2
+
 tensorflow == 1.2.0
 
 keras == 2.0.7
